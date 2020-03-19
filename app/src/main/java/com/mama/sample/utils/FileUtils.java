@@ -30,6 +30,7 @@ public class FileUtils {
 	private static final FileComparator sFileComparator = new FileComparator();
 	private static final String IMAGE_JPG = ".jpg";
 	public static final String SYSTEM_PHOTO_PATH = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/";
+	public static final String MA_PATH = Environment.getExternalStorageDirectory().getPath() + "/ma";
 
 	public static void init(Context context) {
         Log.d(TAG, "mama= SYSTEM_PHOTO_PATH=" + SYSTEM_PHOTO_PATH);
@@ -37,6 +38,8 @@ public class FileUtils {
         Log.d(TAG, "mama= picture=" + context.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
 //        /storage/emulated/0/Android/data/com.mama.utils/files/Pictures
 //        /sdcard/Android/data/com.mama.utils/files/Pictures
+
+        checkDirPath(MA_PATH);
     }
 
 

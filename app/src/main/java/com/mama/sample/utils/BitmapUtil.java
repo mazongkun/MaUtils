@@ -50,7 +50,7 @@ import java.nio.ByteBuffer;
  * The BitmapUtil apply a series of methods to create bitmap or change bitmap
  * shape or scale bitmap or mirror bitmap or save the bitmap~~;
  * 
- * @author SenseTime
+ * @author mazongkun
  * 
  */
 public class BitmapUtil {

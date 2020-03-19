@@ -1,11 +1,8 @@
 package com.mama.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -13,7 +10,7 @@ import android.widget.TextView;
 import com.mama.sample.base.BaseActivity;
 import com.mama.sample.lib.NativeLib;
 import com.mama.sample.utils.BitmapUtil;
-import com.mama.sample.utils.YuvUtils;
+import com.mama.sample.utils.FileUtils;
 
 public class MainActivity extends BaseActivity {
 
@@ -23,14 +20,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         initView();
-        boolean success = checkPermission(new OnPermissionListener() {
-            @Override
-            public void onResult(boolean success) {
-                if (success) {
-
-                }
-            }
-        });
+        checkPermission(null);
     }
 
     private void initView() {
@@ -50,7 +40,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void processImage() {
-        String imagePath = Environment.getExternalStorageDirectory() + "/sensetime/jt.jpg";
+        String imagePath = FileUtils.MA_PATH + "/jt.jpg";
 
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
         if (bitmap != null) {
@@ -59,10 +49,11 @@ public class MainActivity extends BaseActivity {
             int width  = bitmap.getWidth();
             int height = bitmap.getHeight();
             byte[] rgba = BitmapUtil.getRGBAFromBitmap(bitmap);
-//            byte[] nv21 = YuvUtils.RGBAToNv21(rgba, width, height);
 
-//            Bitmap grayBitmap = BitmapUtil.getBitmapFromGrayBuffer(nv21, width, height);
-//            BitmapUtil.saveBitmap(Environment.getExternalStorageDirectory() + "/sensetime/jt_gray.jpg", grayBitmap);
+            byte[] nv21 = new byte[width * height * 3/2];
+
+            NativeLib.RGBA2Nv21(rgba, width, height, nv21);
+            FileUtils.saveFile(FileUtils.MA_PATH + "/jt_" + width + "x" + height + "_nv21.yuv", nv21);
         } else {
             Log.e(TAG, "bitmap = " + bitmap);
         }

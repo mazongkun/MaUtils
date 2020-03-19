@@ -5,6 +5,7 @@ set(SRC_UTILS_DIR ${CMAKE_SOURCE_DIR}/utils)
 set(LIB_DIR       ${CMAKE_SOURCE_DIR}/lib)
 
 include_directories(${SRC_DIR}/include)
+include_directories(${SRC_UTILS_DIR})
 include_directories(${SRC_UTILS_DIR}/include)
 
 aux_source_directory(${SRC_DIR} SRC_LIST)
