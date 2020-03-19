@@ -51,9 +51,12 @@ public class MainActivity extends BaseActivity {
             byte[] rgba = BitmapUtil.getRGBAFromBitmap(bitmap);
 
             byte[] nv21 = new byte[width * height * 3/2];
+            byte[] nv12 = new byte[width * height * 3/2];
 
             NativeLib.RGBA2Nv21(rgba, width, height, nv21);
+            NativeLib.RGBA2Nv12(rgba, width, height, nv12);
             FileUtils.saveFile(FileUtils.MA_PATH + "/jt_" + width + "x" + height + "_nv21.yuv", nv21);
+            FileUtils.saveFile(FileUtils.MA_PATH + "/jt_" + width + "x" + height + "_nv12.yuv", nv12);
         } else {
             Log.e(TAG, "bitmap = " + bitmap);
         }

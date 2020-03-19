@@ -7,5 +7,6 @@
 
 namespace opencv_utils {
     void RGBA2Nv21(unsigned char *rgba, int width, int height, unsigned char *nv21);
+    void RGBA2Nv12(unsigned char *rgba, int width, int height, unsigned char *nv12);
 }
 #endif //MA_UTILS_OPENCV_UTILS_H
