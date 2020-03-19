@@ -1147,15 +1147,13 @@ public class BitmapUtil {
     }
 
     public static void saveBitmapToNv21(String filePath, Bitmap bitmap){
-//        int width = bitmap.getWidth();
-//        int height = bitmap.getHeight();
-//        ByteBuffer buffer = ByteBuffer.allocate(width * height * 4);
-//        buffer.rewind();
-//        bitmap.copyPixelsToBuffer(buffer);
-//        byte[] _out = YuvUtils.RGBAToNv21(buffer.array(), width, height);
-////        byte[] _out = new byte[width * height * 3/2];
-////        ColorConvertUtil.convertColorSpace(buffer.array(), width, height, _out, ColorConvertType.RGBA2NV21);
-//        FileUtils.saveFile(filePath, _out);
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        ByteBuffer buffer = ByteBuffer.allocate(width * height * 4);
+        buffer.rewind();
+        bitmap.copyPixelsToBuffer(buffer);
+        byte[] _out = YuvUtils.RGBAToNv21(buffer.array(), width, height);
+        FileUtils.saveFile(filePath, _out);
     }
 
 	/**
@@ -1278,47 +1276,4 @@ public class BitmapUtil {
 		bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(rgba));
 		return bitmap;
 	}
-
-	public static byte[] YUV_420_888toGRAY(Image image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int ySize = width*height;
-
-        byte[] y = new byte[ySize];
-
-        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer(); // Y
-
-        int rowStride = image.getPlanes()[0].getRowStride();
-        assert(image.getPlanes()[0].getPixelStride() == 1);
-
-        int pos = 0;
-        if (rowStride == width) { // likely
-            yBuffer.get(y, 0, ySize);
-            pos += ySize;
-        } else {
-            int yBufferPos = width - rowStride; // not an actual position
-            for (; pos<ySize; pos+=width) {
-                yBufferPos += rowStride - width;
-                yBuffer.position(yBufferPos);
-                yBuffer.get(y, pos, width);
-            }
-        }
-
-        return y;
-    }
-
-    public static byte[] YUV_420_888toNV21(ByteBuffer yBuffer, ByteBuffer uBuffer, ByteBuffer vBuffer) {
-        byte[] nv;
-
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
-
-        nv = new byte[ySize + uSize + vSize];
-
-        yBuffer.get(nv, 0, ySize);
-        vBuffer.get(nv, ySize, vSize);
-        uBuffer.get(nv, ySize + vSize, uSize);
-        return nv;
-    }
 }

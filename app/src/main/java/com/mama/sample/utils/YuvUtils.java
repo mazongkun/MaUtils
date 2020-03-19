@@ -3,6 +3,7 @@ package com.mama.sample.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.media.Image;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -11,6 +12,8 @@ import android.renderscript.Type;
 import android.util.Log;
 
 import com.mama.sample.lib.NativeLib;
+
+import java.nio.ByteBuffer;
 
 public class YuvUtils {
     private static final String TAG = YuvUtils.class.getSimpleName();
@@ -128,5 +131,48 @@ public class YuvUtils {
         Bitmap bmpout = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         out.copyTo(bmpout);
         return bmpout;
+    }
+
+    public static byte[] YUV_420_888toGRAY(Image image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int ySize = width*height;
+
+        byte[] y = new byte[ySize];
+
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer(); // Y
+
+        int rowStride = image.getPlanes()[0].getRowStride();
+        assert(image.getPlanes()[0].getPixelStride() == 1);
+
+        int pos = 0;
+        if (rowStride == width) { // likely
+            yBuffer.get(y, 0, ySize);
+            pos += ySize;
+        } else {
+            int yBufferPos = width - rowStride; // not an actual position
+            for (; pos<ySize; pos+=width) {
+                yBufferPos += rowStride - width;
+                yBuffer.position(yBufferPos);
+                yBuffer.get(y, pos, width);
+            }
+        }
+
+        return y;
+    }
+
+    public static byte[] YUV_420_888toNV21(ByteBuffer yBuffer, ByteBuffer uBuffer, ByteBuffer vBuffer) {
+        byte[] nv;
+
+        int ySize = yBuffer.remaining();
+        int uSize = uBuffer.remaining();
+        int vSize = vBuffer.remaining();
+
+        nv = new byte[ySize + uSize + vSize];
+
+        yBuffer.get(nv, 0, ySize);
+        vBuffer.get(nv, ySize, vSize);
+        uBuffer.get(nv, ySize + vSize, uSize);
+        return nv;
     }
 }
