@@ -11,6 +11,7 @@ import com.mama.sample.base.BaseActivity;
 import com.mama.sample.lib.NativeLib;
 import com.mama.sample.utils.BitmapUtil;
 import com.mama.sample.utils.FileUtils;
+import com.mama.sample.utils.YuvUtils;
 
 public class MainActivity extends BaseActivity {
 
@@ -50,11 +51,8 @@ public class MainActivity extends BaseActivity {
             int height = bitmap.getHeight();
             byte[] rgba = BitmapUtil.getRGBAFromBitmap(bitmap);
 
-            byte[] nv21 = new byte[width * height * 3/2];
-            byte[] nv12 = new byte[width * height * 3/2];
-
-            NativeLib.RGBA2Nv21(rgba, width, height, nv21);
-            NativeLib.RGBA2Nv12(rgba, width, height, nv12);
+            byte[] nv21 = YuvUtils.RGBAToNv21(rgba, width, height);
+            byte[] nv12 = YuvUtils.RGBAToNv12(rgba, width, height);
             FileUtils.saveFile(FileUtils.MA_PATH + "/jt_" + width + "x" + height + "_nv21.yuv", nv21);
             FileUtils.saveFile(FileUtils.MA_PATH + "/jt_" + width + "x" + height + "_nv12.yuv", nv12);
         } else {

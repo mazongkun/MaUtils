@@ -10,6 +10,8 @@ import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.renderscript.Type;
 import android.util.Log;
 
+import com.mama.sample.lib.NativeLib;
+
 public class YuvUtils {
     private static final String TAG = YuvUtils.class.getSimpleName();
 
@@ -52,6 +54,26 @@ public class YuvUtils {
         rs = null;
         yuvToRgbIntrinsic.destroy();
         yuvToRgbIntrinsic = null;
+    }
+
+    public static byte[] RGBAToNv21(byte[] rgba, int width, int height) {
+        if (rgba == null || width < 1 || height < 1) {
+            return null;
+        }
+
+        byte[] nv21 = new byte[width * height * 3/2];
+        NativeLib.RGBA2Nv21(rgba, width, height, nv21);
+        return nv21;
+    }
+
+    public static byte[] RGBAToNv12(byte[] rgba, int width, int height) {
+        if (rgba == null || width < 1 || height < 1) {
+            return null;
+        }
+
+        byte[] nv12 = new byte[width * height * 3/2];
+        NativeLib.RGBA2Nv12(rgba, width, height, nv12);
+        return nv12;
     }
 
     public static byte[] nv21ToRGBA(byte[] nv21, int width, int height){
