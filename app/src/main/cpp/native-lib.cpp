@@ -2,9 +2,9 @@
 #include <string>
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_mama_utils_MainActivity_stringFromJNI(
+Java_com_mama_sample_lib_NativeLib_stringFromJNI(
         JNIEnv *env,
-        jobject /* this */) {
+        jclass /* this */) {
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
