@@ -10,11 +10,11 @@ include_directories(${SRC_UTILS_DIR}/include)
 
 aux_source_directory(${SRC_DIR} SRC_LIST)
 aux_source_directory(${SRC_UTILS_DIR} SRC_UTILS_LIST)
+message(mama= ${SRC_LIST})
 
 # lib
 add_library(opencv_lib STATIC IMPORTED)
 set_target_properties(opencv_lib PROPERTIES IMPORTED_LOCATION ${LIB_DIR}/${ANDROID_ABI}/libopencv_java4.so)
-message(mama= ${LIB_DIR}/${ANDROID_ABI}/libopencv_java4.so)
 
 # jni
 add_library(
@@ -23,11 +23,9 @@ add_library(
         ${SRC_LIST}
         ${SRC_UTILS_LIST})
 
-find_library(
-        log-lib
-        log)
-
 target_link_libraries(
         native-lib
         opencv_lib
-        ${log-lib})
+        GLESv2
+        EGL
+        log)

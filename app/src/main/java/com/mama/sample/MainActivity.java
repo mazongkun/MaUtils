@@ -1,5 +1,6 @@
 package com.mama.sample;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mama.sample.base.BaseActivity;
+import com.mama.sample.camera.Camera2Activity;
 import com.mama.sample.lib.NativeLib;
 import com.mama.sample.utils.BitmapUtil;
 import com.mama.sample.utils.FileUtils;
@@ -32,7 +34,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (checkPermission(null)) {
-                    processImage();
+//                    processImage();
+                    startActivity(new Intent(MainActivity.this, Camera2Activity.class));
                 } else {
                     showToast("请打开权限");
                 }

@@ -3,6 +3,7 @@
 
 #include "log_utils.h"
 #include "opencv_utils.h"
+#include "render.h"
 
 extern "C" {
 JNIEXPORT jstring JNICALL
@@ -50,4 +51,70 @@ Java_com_mama_sample_lib_NativeLib_RGBA2Nv12(JNIEnv *env, jclass clazz,
     env->ReleaseByteArrayElements(_nv12, nv12, 0);
 }
 
+// render
+render * p_render = nullptr;
+JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_initRender(JNIEnv *env, jclass clazz,
+                                              jint width,
+                                              jint height) {
+    if (width <= 0 || height <= 0) {
+        return GL_PARAM_ERROR;
+    }
+
+    int ret = GL_OK;
+    if (p_render == nullptr) {
+        p_render = new render();
+        ret = p_render->init(width, height);
+
+        if (ret != GL_OK) {
+            // error
+            LOGE("init render error: %d", ret);
+            p_render->destroy();
+            delete p_render;
+            p_render = nullptr;
+        }
+    }
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_renderToScreen(JNIEnv *env, jclass clazz,
+                                                  jbyteArray _buffer ,
+                                                  jint width,
+                                                  jint height,
+                                                  jboolean is_front_camera) {
+    if (_buffer == nullptr || width <= 0 || height <= 0) {
+        return BUFFER_ERROR;
+    }
+
+    jbyte  * buffer = env->GetByteArrayElements(_buffer, 0);
+    int ret = GL_OK;
+
+    ret = p_render->renderToScreen((unsigned char *) buffer, width, height, is_front_camera);
+    LOGD("renderToScreen: %d", ret);
+
+    env->ReleaseByteArrayElements(_buffer, buffer, 0);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_renderTextureToScreen(JNIEnv *env, jclass clazz,
+                                                         jint texture,
+                                                         jint width,
+                                                         jint height,
+                                                         jboolean is_front_camera) {
+    return p_render->renderTextureToScreen(texture, width, height, is_front_camera);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_destroyRender(JNIEnv *env, jclass clazz) {
+    if (p_render != nullptr) {
+        p_render->destroy();
+        delete p_render;
+        p_render = nullptr;
+    }
+    return GL_OK;
+}
+
 } // extern "C"
+

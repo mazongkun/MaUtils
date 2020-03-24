@@ -20,7 +20,7 @@ public class BaseActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION = 1;
     private final String[] PERMISSIONS = new String[] {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//            Manifest.permission.CAMERA
+            Manifest.permission.CAMERA
     };
 
     protected OnPermissionListener permissionListener = null;
