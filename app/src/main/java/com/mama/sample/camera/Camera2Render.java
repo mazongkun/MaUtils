@@ -11,6 +11,9 @@ import com.mama.sample.lib.NativeLib;
 import com.mama.sample.utils.OrientationUtils;
 import com.mama.sample.utils.YuvUtils;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -37,7 +40,8 @@ public class Camera2Render implements GLSurfaceView.Renderer {
     private boolean destroy = false;
 
     private ProcessThread processThread;
-    private Frame curFrame;
+    private Frame lastFrame;
+    private Queue<Frame> frameQueue;
     private boolean mShowOriginal;
 
     class Frame {
@@ -61,6 +65,7 @@ public class Camera2Render implements GLSurfaceView.Renderer {
         mRenderListener = renderListener;
         destroy = false;
 
+        frameQueue = new LinkedList<>();
         processThread = new ProcessThread();
         processThread.start();
     }
@@ -91,12 +96,19 @@ public class Camera2Render implements GLSurfaceView.Renderer {
             }
         }
 
-        if (curFrame == null) return;
-
         synchronized (mFrameSyncObject) {
-            NativeLib.renderToScreen(curFrame.rgba, curFrame.width, curFrame.height, mFrontCamera);
+            if (frameQueue.size() < 1 && lastFrame != null) {
+                NativeLib.renderToScreen(lastFrame.rgba, lastFrame.width, lastFrame.height, mFrontCamera);
+                Log.d(TAG, "onDrawFrame lastFrame");
+            } else {
+                Frame frame = null;
+                while ((frame = frameQueue.poll()) != null) {
+                    lastFrame = frame;
+                    NativeLib.renderToScreen(frame.rgba, frame.width, frame.height, mFrontCamera);
+                    Log.d(TAG, "onDrawFrame 2222222222 w=" + frame.width + ", h=" + frame.height);
+                }
+            }
         }
-        Log.e(TAG, "onDrawFrame 2222222222 w=" + curFrame.width + ", h=" + curFrame.height);
     }
 
     public void destroy() {
@@ -134,7 +146,7 @@ public class Camera2Render implements GLSurfaceView.Renderer {
                         synchronized (mFrameSyncObject) {
                             OrientationUtils.FaceOrientation faceOrientation = OrientationUtils.getFaceOrientation(frontCamera);
                             rgba = YuvUtils.nv21ToRGBA(copyBuffer, width, height);
-                            curFrame = new Frame(rgba, width, height);
+                            frameQueue.offer(new Frame(rgba, width, height));
                         }
 
                         if (System.currentTimeMillis() - mFrameTime >= 1000) {
