@@ -107,6 +107,38 @@ Java_com_mama_sample_lib_NativeLib_renderTextureToScreen(JNIEnv *env, jclass cla
 }
 
 JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_setLut(JNIEnv *env, jclass clazz,
+                                          jbyteArray _buffer,
+                                          jint width,
+                                          jint height) {
+    if (_buffer == nullptr || width <= 0 || height <= 0) {
+        return BUFFER_ERROR;
+    }
+    jbyte * buffer = env->GetByteArrayElements(_buffer, 0);
+    int ret = p_render->setLut((unsigned char*)buffer, width, height);
+    env->ReleaseByteArrayElements(_buffer, buffer, 0);
+    return ret;
+}
+JNIEXPORT jint JNICALL
+Java_com_mama_sample_lib_NativeLib_renderLutToScreen(JNIEnv *env, jclass clazz,
+                                                     jbyteArray _buffer,
+                                                     jint width,
+                                                     jint height,
+                                                     jboolean is_front_camera) {
+    if (_buffer == nullptr || width <= 0 || height <= 0) {
+        return BUFFER_ERROR;
+    }
+
+    jbyte  * buffer = env->GetByteArrayElements(_buffer, 0);
+    int ret = GL_OK;
+
+    ret = p_render->renderLutToScreen((unsigned char *) buffer, width, height, is_front_camera);
+    LOGD("renderLutToScreen: %d", ret);
+
+    env->ReleaseByteArrayElements(_buffer, buffer, 0);
+}
+
+JNIEXPORT jint JNICALL
 Java_com_mama_sample_lib_NativeLib_destroyRender(JNIEnv *env, jclass clazz) {
     if (p_render != nullptr) {
         p_render->destroy();

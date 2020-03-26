@@ -11,6 +11,9 @@ public class NativeLib {
     public static native int initRender(int width, int height);
     public static native int renderToScreen(byte[] buffer, int width, int height, boolean isFrontCamera);
     public static native int renderTextureToScreen(int texture, int width, int height, boolean isFrontCamera);
+
+    public static native int setLut(byte[] buffer, int width, int height);
+    public static native int renderLutToScreen(byte[] buffer, int width, int height, boolean isFrontCamera);
     public static native int destroyRender();
 
     static {

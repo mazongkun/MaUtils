@@ -1,16 +1,20 @@
 package com.mama.sample.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mama.sample.R;
 import com.mama.sample.lib.NativeLib;
+import com.mama.sample.utils.BitmapUtil;
 import com.mama.sample.utils.OrientationUtils;
 import com.mama.sample.utils.YuvUtils;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -40,6 +44,7 @@ public class Camera2Render implements GLSurfaceView.Renderer {
     private boolean destroy = false;
 
     private ProcessThread processThread;
+    private Frame lutFrame;
     private Frame lastFrame;
     private Queue<Frame> frameQueue;
     private boolean mShowOriginal;
@@ -97,15 +102,34 @@ public class Camera2Render implements GLSurfaceView.Renderer {
         }
 
         synchronized (mFrameSyncObject) {
-            if (frameQueue.size() < 1 && lastFrame != null) {
-                NativeLib.renderToScreen(lastFrame.rgba, lastFrame.width, lastFrame.height, mFrontCamera);
-                Log.d(TAG, "onDrawFrame lastFrame");
-            } else {
-                Frame frame = null;
-                while ((frame = frameQueue.poll()) != null) {
-                    lastFrame = frame;
-                    NativeLib.renderToScreen(frame.rgba, frame.width, frame.height, mFrontCamera);
-                    Log.d(TAG, "onDrawFrame 2222222222 w=" + frame.width + ", h=" + frame.height);
+            if (mShowOriginal) {
+                if (frameQueue.size() < 1 && lastFrame != null) {
+                    NativeLib.renderToScreen(lastFrame.rgba, lastFrame.width, lastFrame.height, mFrontCamera);
+                    Log.d(TAG, "onDrawFrame lastFrame");
+                } else {
+                    Frame frame = null;
+                    while ((frame = frameQueue.poll()) != null) {
+                        lastFrame = frame;
+                        NativeLib.renderToScreen(frame.rgba, frame.width, frame.height, mFrontCamera);
+                        Log.d(TAG, "onDrawFrame 2222222222 w=" + frame.width + ", h=" + frame.height);
+                    }
+                }
+            } else { // lut
+                Log.d(TAG, "onDrawFrame lut 0000 lastFrame");
+                NativeLib.setLut(lutFrame.rgba, lutFrame.width, lutFrame.height);
+                Log.d(TAG, "onDrawFrame lut 1111 lastFrame");
+                if (frameQueue.size() < 1 && lastFrame != null) {
+                    Log.d(TAG, "onDrawFrame lut 3333 lastFrame");
+                    NativeLib.renderLutToScreen(lastFrame.rgba, lastFrame.width, lastFrame.height, mFrontCamera);
+                    Log.d(TAG, "onDrawFrame lut lastFrame");
+                } else {
+                    Log.d(TAG, "onDrawFrame lut 4444 lastFrame");
+                    Frame frame = null;
+                    while ((frame = frameQueue.poll()) != null) {
+                        lastFrame = frame;
+                        NativeLib.renderLutToScreen(frame.rgba, frame.width, frame.height, mFrontCamera);
+                        Log.d(TAG, "onDrawFrame lut 2222222222 w=" + frame.width + ", h=" + frame.height);
+                    }
                 }
             }
         }
@@ -135,6 +159,11 @@ public class Camera2Render implements GLSurfaceView.Renderer {
         @Override
         public void run() {
             try {
+                // lut
+                Bitmap lutBitmap = BitmapUtil.getBitmapFromRaw(mContext, R.raw.gray);
+                byte[] lutRGBA = BitmapUtil.getRGBAFromBitmap(lutBitmap);
+                lutFrame = new Frame(lutRGBA, lutBitmap.getWidth(), lutBitmap.getHeight());
+
                 while (isRunning && !isInterrupted()) {
                     synchronized (syncObject) {
                         syncObject.wait();
@@ -159,6 +188,8 @@ public class Camera2Render implements GLSurfaceView.Renderer {
                     }
                 }
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 isRunning = false;
