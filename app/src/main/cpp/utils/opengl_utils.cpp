@@ -212,7 +212,7 @@ void writeFile2(const char* fileName, unsigned char* fileData, int len) {
 }
 void dumpTexture(int textureId, int width, int height, const char* fileName) {
     char filePath[1024];
-    sprintf(filePath, "/sdcard/DCIM/single_blur/%dx%d_%s", width, height, fileName);
+    sprintf(filePath, "/sdcard/ma/%dx%d_%s", width, height, fileName);
 //	sprintf(filePath, "/data/misc/camera/%dx%d_%s", width, height, fileName);
     LOGW("dumpTexture path=%s", filePath);
     int len = sizeof(unsigned char) * width * height * 4;

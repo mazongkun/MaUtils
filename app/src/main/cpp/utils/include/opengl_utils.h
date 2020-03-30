@@ -55,4 +55,6 @@ void glInternalDeleteProgram(int & program);
 void glInternalDeleteFramebuffers(int num, int* buffers);
 void glInternalDeleteTextures(int num, int* textures);
 
+void dumpTexture(int textureId, int width, int height, const char* fileName);
+
 #endif //OPENGL_UTILS_H
