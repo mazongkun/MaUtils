@@ -250,9 +250,9 @@ int render::renderLutToScreen(unsigned char* buffer, int width, int height, bool
     glBindTexture(GL_TEXTURE_2D, (GLuint)mTexture);
     glUniform1i(inputImageHandle, 0);
 
-//    glActiveTexture(GL_TEXTURE1);
-//    glBindTexture(GL_TEXTURE_2D, (GLuint)mLutTexture);
-//    glUniform1f(inputLutHandle, 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, (GLuint)mLutTexture);
+    glUniform1f(inputLutHandle, 1);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glDisableVertexAttribArray((GLuint)vertexHandle);

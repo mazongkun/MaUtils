@@ -49,13 +49,15 @@ const static char* FRAGMENT_SHADER_2D = "" \
 		"}";
 //LOOK_UP_TABLE_FUNC
 const static char* FRAGMENT_SHADER_LUT = "" \
-		"varying highp vec2 textureCoordinate;\n" \
+        "varying highp vec2 textureCoordinate;\n" \
 		"uniform sampler2D inputImageTexture;\n" \
-		"//uniform sampler2D inputLutTexture;\n" \
+		"uniform sampler2D inputLutTexture;\n" \
+		LOOK_UP_TABLE_FUNC
 		"void main() {\n" \
-		"     //vec4 ori = texture2D(inputImageTexture, textureCoordinate); \n" \
-		"     //gl_FragColor = lookupTable(ori, inputLutTexture); \n" \
-		"     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" \
+		"     vec4 ori = texture2D(inputImageTexture, textureCoordinate); \n" \
+		"     //vec4 lookup = lookupTable(ori, inputLutTexture);\n" \
+		"     gl_FragColor = lookupTable(ori, inputLutTexture); \n" \
+		"     //gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" \
 		"}";
 
 const static GLfloat VERTEX_POSITION[] = {

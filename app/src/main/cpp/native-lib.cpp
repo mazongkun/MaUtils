@@ -136,6 +136,7 @@ Java_com_mama_sample_lib_NativeLib_renderLutToScreen(JNIEnv *env, jclass clazz,
     LOGD("renderLutToScreen: %d", ret);
 
     env->ReleaseByteArrayElements(_buffer, buffer, 0);
+    return ret;
 }
 
 JNIEXPORT jint JNICALL

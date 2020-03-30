@@ -115,15 +115,11 @@ public class Camera2Render implements GLSurfaceView.Renderer {
                     }
                 }
             } else { // lut
-                Log.d(TAG, "onDrawFrame lut 0000 lastFrame");
                 NativeLib.setLut(lutFrame.rgba, lutFrame.width, lutFrame.height);
-                Log.d(TAG, "onDrawFrame lut 1111 lastFrame");
+                Log.d(TAG, "onDrawFrame lut lastFrame");
                 if (frameQueue.size() < 1 && lastFrame != null) {
-                    Log.d(TAG, "onDrawFrame lut 3333 lastFrame");
                     NativeLib.renderLutToScreen(lastFrame.rgba, lastFrame.width, lastFrame.height, mFrontCamera);
-                    Log.d(TAG, "onDrawFrame lut lastFrame");
                 } else {
-                    Log.d(TAG, "onDrawFrame lut 4444 lastFrame");
                     Frame frame = null;
                     while ((frame = frameQueue.poll()) != null) {
                         lastFrame = frame;
@@ -160,7 +156,7 @@ public class Camera2Render implements GLSurfaceView.Renderer {
         public void run() {
             try {
                 // lut
-                Bitmap lutBitmap = BitmapUtil.getBitmapFromRaw(mContext, R.raw.gray);
+                Bitmap lutBitmap = BitmapUtil.getBitmapFromRaw(mContext, R.raw.base);
                 byte[] lutRGBA = BitmapUtil.getRGBAFromBitmap(lutBitmap);
                 lutFrame = new Frame(lutRGBA, lutBitmap.getWidth(), lutBitmap.getHeight());
 

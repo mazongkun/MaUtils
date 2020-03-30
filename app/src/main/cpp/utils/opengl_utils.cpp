@@ -189,3 +189,35 @@ void glInternalDeleteTextures(int num, int* textures) {
         textures[i] = -1;
     }
 }
+
+void readPixelsToBuffer(int textureId, int x, int y, int width, int height, unsigned char *buffer) {
+    glFinish();
+    GLuint fbo[1];
+    glGenFramebuffers(1, fbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+
+    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    glInternalDeleteFramebuffers(1, (int *)fbo);
+    glFinish();
+}
+
+void writeFile2(const char* fileName, unsigned char* fileData, int len) {
+    FILE* fp;
+    fp = fopen(fileName, "wb");
+    len = fwrite(fileData, sizeof(unsigned char), len, fp);
+    fclose(fp);
+    LOGW("write file path=%s, len=%d", fileName, len);
+}
+void dumpTexture(int textureId, int width, int height, const char* fileName) {
+    char filePath[1024];
+    sprintf(filePath, "/sdcard/DCIM/single_blur/%dx%d_%s", width, height, fileName);
+//	sprintf(filePath, "/data/misc/camera/%dx%d_%s", width, height, fileName);
+    LOGW("dumpTexture path=%s", filePath);
+    int len = sizeof(unsigned char) * width * height * 4;
+    unsigned char* buffer = (unsigned char*) malloc(len);
+    readPixelsToBuffer(textureId, 0, 0, width, height, buffer);
+    writeFile2(filePath, buffer, len);
+    free(buffer);
+}
